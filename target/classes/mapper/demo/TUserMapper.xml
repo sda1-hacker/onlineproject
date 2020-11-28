@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.online.demo.mapper.TUserMapper">
+
+    <sql id="user_column">
+        id, account, telNum, email, password ,realName, status, createTime, address, nickName
+    </sql>
+
+    <select id="findUserByAccountInfo" resultType="com.online.demo.entity.TUser" parameterType="java.lang.String">
+        select
+        <include refid="user_column" />
+        from t_user
+        where 1 = 1
+        and account = #{accountInfo}
+        or telNum = #{accountInfo}
+        or email = #{accountInfo}
+    </select>
+
+</mapper>
