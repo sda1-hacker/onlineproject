@@ -41,11 +41,12 @@ public class TUserController {
     @PostMapping("userRegist")
     @ResponseBody
     public ResultBean<TUser> userRegist(String account, String telNum, String email, String password ,
-                             String realName, String province, String area, String address, String nickName){
+                                        String province, String area, String address, String nickName,
+                                        String gender){
 
         StringBuilder addr = new StringBuilder(province).append(area).append(address);
 
-        TUser user = new TUser(account,telNum, email, password, realName, true, null, addr.toString(), nickName);
+        TUser user = new TUser(account,telNum, email, password, true, LocalDateTime.now(), addr.toString(), nickName, gender, 0, "--");
         userService.userRegist(user);
 
         return ResultBean.getSuccessInstance("注册成功..");

@@ -35,9 +35,6 @@ public class TUser implements Serializable {
 
     private String password;
 
-    @TableField("realName")
-    private String realname;
-
     /**
      * 0表示正常，1表示禁用
      */
@@ -51,15 +48,24 @@ public class TUser implements Serializable {
     @TableField("nickName")
     private String nickname;
 
-    public TUser(String account, String telnum, String email, String password, String realname, Boolean status, LocalDateTime createtime, String address, String nickname) {
+    private String gender;
+
+    private int score;
+
+    @TableField("userLevel")
+    private String userlevel;
+
+    public TUser(String account, String telnum, String email, String password, Boolean status, LocalDateTime createtime, String address, String nickname, String gender, int score, String userlevel) {
         this.account = account;
         this.telnum = telnum;
         this.email = email;
         this.password = password;
-        this.realname = realname;
         this.status = status;
         this.createtime = createtime;
         this.address = address;
         this.nickname = nickname;
+        this.gender = gender;
+        this.score = score;
+        this.userlevel = userlevel;
     }
 }
