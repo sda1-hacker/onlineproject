@@ -38,6 +38,7 @@ public class TUserController {
     private RedisTemplate redisTemplate;
 
 
+    // 注册
     @PostMapping("userRegist")
     @ResponseBody
     public ResultBean<TUser> userRegist(String account, String telNum, String email, String password ,
@@ -86,6 +87,7 @@ public class TUserController {
     }
 
 
+    // 显示个人信息
     @GetMapping("showUserInfo")
     @ResponseBody
     public ResultBean<TUser> showUserInfo(HttpServletRequest request, Model model){
@@ -101,9 +103,11 @@ public class TUserController {
     }
 
 
+    // 修改个人信息
     @GetMapping("updateUserInfo")
     @ResponseBody
-    public ResultBean<TUser> updateUserInfo(HttpServletRequest request){
+    public ResultBean<TUser> updateUserInfo(HttpServletRequest request, String telnum, String email, String password, String address, String nickname,
+                                            @CookieValue(value = CommonStr.COOKIE_USER_TOKEN, required = false) String userToken){
 
         TUser currUser = (TUser) request.getAttribute("user");
 
@@ -111,7 +115,7 @@ public class TUserController {
             return ResultBean.getErrorInstance("您还没有登录,不能修改信息..");
         }
 
-        // TODO 修改用户信息逻辑
+        currUser = userService.updateUserInfo(userToken, telnum, email, password, address, nickname);
 
         request.setAttribute("user", currUser);
         ResultBean<TUser> result = ResultBean.getSuccessInstance("修改成功..");
@@ -121,6 +125,7 @@ public class TUserController {
     }
 
 
+    // 注销
     @ResponseBody
     @GetMapping("userLogout")
     public ResultBean<TUser> userLogout(@CookieValue(CommonStr.COOKIE_USER_TOKEN) String userToken,

@@ -22,4 +22,9 @@ public interface ITUserService extends IService<TUser> {
     // 判断用户是否登录
     public TUser checkUserIsLogin(String userToken);
 
+    // 修改用户信息
+    public TUser updateUserInfo(String userToken, String telnum,
+                                String email, String password, String address,
+                                String nickname);
+
 }

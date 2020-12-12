@@ -8,6 +8,10 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.solr.core.SolrTemplate;
+import org.springframework.data.solr.core.query.Criteria;
+import org.springframework.data.solr.core.query.Query;
+import org.springframework.data.solr.core.query.SimpleQuery;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
@@ -21,6 +25,9 @@ public class Test {
 
     @Autowired
     private RedisTemplate redisTemplate;
+
+    @Autowired
+    private SolrTemplate solrTemplate;
 
     @org.junit.Test
     public void qwTest(){
@@ -40,6 +47,14 @@ public class Test {
         // double res = redisTemplate.opsForZSet().score(CommonStr.HOT_TOPIC, "222"); // 不存在就报错
         // Long res = redisTemplate.opsForZSet().rank(CommonStr.HOT_TOPIC, "222"); // 不存在返回null，可以用来判断 某一个元素是否存在
         System.out.println(System.currentTimeMillis());
+    }
+
+    @org.junit.Test
+    public void solrtest(){
+
+        Query query = new SimpleQuery();
+        Criteria criteria = new Criteria();
+
     }
 
 }

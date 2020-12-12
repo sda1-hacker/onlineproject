@@ -2,6 +2,10 @@ server:
   port: 9600
 
 spring:
+  data:
+    solr:
+      host: http://baseCentos:8080/solr  # 单机版solr配置
+
   # mysql 相关配置
   datasource:
     url: jdbc:mysql://baseCentos:3306/online?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC

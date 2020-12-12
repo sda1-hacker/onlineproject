@@ -5,6 +5,7 @@ import com.online.demo.entity.TUser;
 import com.online.demo.mapper.TUserMapper;
 import com.online.demo.service.ITUserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -49,7 +50,7 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
 
         TUser user = userMapper.findUserByAccountInfo(accountInfo);
 
-        if(bCryptPasswordEncoder.matches(password, user.getPassword())){
+        if (bCryptPasswordEncoder.matches(password, user.getPassword())) {
             return user;
         }
 
@@ -60,18 +61,56 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
     @Override
     public TUser checkUserIsLogin(String userToken) {
 
-        if("".equals(userToken) || userToken == null) {
+        if ("".equals(userToken) || userToken == null) {
             return null;
         }
 
         StringBuilder redisKey = new StringBuilder(CommonStr.REDIS_KEY).append(userToken);
         TUser currUser = (TUser) redisTemplate.opsForValue().get(redisKey.toString());
 
-        if(currUser != null){
+        if (currUser != null) {
             redisTemplate.expire(redisKey.toString(), 30, TimeUnit.MINUTES);
             return currUser;
         }
 
         return null;
     }
+
+    // 修改用户信息
+    @Override
+    public TUser updateUserInfo(String userToken, String telnum,
+                                String email, String password, String address,
+                                String nickname) {
+
+        if ("".equals(userToken) || userToken == null) {
+            return null;
+        }
+
+        StringBuilder redisKey = new StringBuilder(CommonStr.REDIS_KEY).append(userToken);
+        TUser currUser = (TUser) redisTemplate.opsForValue().get(redisKey.toString());
+
+        if (currUser != null) {
+            if (!StringUtils.isEmpty(telnum)) {
+                currUser.setTelnum(telnum);
+            }
+            if (!StringUtils.isEmpty(email)) {
+                currUser.setEmail(email);
+            }
+            if (!StringUtils.isEmpty(password)) {
+                currUser.setPassword(bCryptPasswordEncoder.encode(password));
+            }
+            if (!StringUtils.isEmpty(address)) {
+                currUser.setAddress(address);
+            }
+            if (!StringUtils.isEmpty(nickname)) {
+                currUser.setNickname(nickname);
+            }
+
+
+            return currUser;
+        }
+
+        return null;
+    }
+
 }
