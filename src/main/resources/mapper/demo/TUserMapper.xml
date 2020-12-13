@@ -3,7 +3,7 @@
 <mapper namespace="com.online.demo.mapper.TUserMapper">
 
     <sql id="user_column">
-        id, account, telNum, email, password, status, createTime, address, nickName, gender, score, userLevel
+        id, account, telNum, email, password, status, createTime, address, nickName, gender, score, userLevel, userType
     </sql>
 
     <select id="findUserByAccountInfo" resultType="com.online.demo.entity.TUser" parameterType="java.lang.String">

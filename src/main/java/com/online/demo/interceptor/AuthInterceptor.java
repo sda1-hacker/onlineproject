@@ -28,8 +28,16 @@ public class AuthInterceptor implements HandlerInterceptor {
 
         for (Cookie cookie : cookies){
 
-            // TODO admin相关过滤在这里处理
+            // 管理员拦截器
+            if(CommonStr.COOKIE_ADMIN_TOKEN.equals(cookie.getName())) {
+                TUser admin = userService.checkUserIsLogin(cookie.getValue()); // userService注入失败 -- 需要生成一个AuthIntercepter的Bean对象交给Spring管理才可以
+                if(admin != null){
+                    request.setAttribute("admin", admin);
+                    return true;
+                }
+            }
 
+            // 一般用户拦截器
             if(CommonStr.COOKIE_USER_TOKEN.equals(cookie.getName())) {
                 TUser currUser = userService.checkUserIsLogin(cookie.getValue()); // userService注入失败 -- 需要生成一个AuthIntercepter的Bean对象交给Spring管理才可以
                 if(currUser != null){

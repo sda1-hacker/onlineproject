@@ -16,4 +16,5 @@ public class CommonStr {
 
     public static final String LIVE_NUM = "likeNum:";   // 点赞次数redis前缀      LIVE_NUM + id
 
+    public static final String COLLECTION_CONTENT = "content"; // TContent 的solr 索引
 }

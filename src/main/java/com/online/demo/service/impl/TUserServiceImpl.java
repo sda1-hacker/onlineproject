@@ -11,6 +11,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -24,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements ITUserService {
 
-    @Autowired
+    @Resource
     private TUserMapper userMapper;
 
     @Autowired
@@ -82,7 +83,7 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser> implements
                                 String email, String password, String address,
                                 String nickname) {
 
-        if ("".equals(userToken) || userToken == null) {
+        if (StringUtils.isEmpty(userToken)) {
             return null;
         }
 

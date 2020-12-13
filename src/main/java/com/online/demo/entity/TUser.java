@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -54,6 +55,10 @@ public class TUser implements Serializable {
 
     @TableField("userLevel")
     private String userlevel;
+
+    @JsonIgnore
+    @TableField("userType")
+    private boolean usertype;
 
     public TUser(String account, String telnum, String email, String password, Boolean status, LocalDateTime createtime, String address, String nickname, String gender, int score, String userlevel) {
         this.account = account;

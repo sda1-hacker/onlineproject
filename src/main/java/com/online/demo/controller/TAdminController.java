@@ -1,7 +1,6 @@
 package com.online.demo.controller;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.online.demo.common.CommonStr;
 import com.online.demo.common.ResultBean;
 import com.online.demo.entity.TUser;
@@ -31,9 +30,9 @@ import java.util.concurrent.TimeUnit;
  * @since 2020-11-24
  */
 @Controller
-@RequestMapping("/user")
+@RequestMapping("/admin")
 @Slf4j
-public class TUserController {
+public class TAdminController {
     @Autowired
     private ITUserService userService;
     @Autowired
@@ -41,15 +40,16 @@ public class TUserController {
 
 
     // 注册
-    @PostMapping("userRegist")
+    @PostMapping("adminRegist")
     @ResponseBody
     public ResultBean<TUser> userRegist(String account, String telNum, String email, String password ,
                                         String province, String area, String address, String nickName,
-                                        String gender){
+                                        String gender, boolean userType){
 
         StringBuilder addr = new StringBuilder(province).append(area).append(address);
 
         TUser user = new TUser(account,telNum, email, password, true, LocalDateTime.now(), addr.toString(), nickName, gender, 0, "--");
+        user.setUsertype(userType); // 0表示管理员
         userService.userRegist(user);
 
         return ResultBean.getSuccessInstance("注册成功..");
@@ -57,10 +57,9 @@ public class TUserController {
 
 
     // 用户登录
-    @PostMapping("userLogin")
+    @PostMapping("adminLogin")
     @ResponseBody
-    @JsonIgnore()
-    public ResultBean<TUser> userLogin( String accountInfo, String password, HttpServletRequest request, HttpServletResponse response){
+    public ResultBean<TUser> adminLogin( String accountInfo, String password, HttpServletRequest request, HttpServletResponse response){
 
         TUser user = userService.userLogin(accountInfo, password);
 
@@ -70,13 +69,13 @@ public class TUserController {
 
         // 构造 cookie
         String userToken = UUID.randomUUID().toString();
-        Cookie cookie = new Cookie(CommonStr.COOKIE_USER_TOKEN, userToken);
+        Cookie cookie = new Cookie(CommonStr.COOKIE_ADMIN_TOKEN, userToken);
         cookie.setMaxAge(30); // cookie存活时间
         cookie.setPath("/");
         cookie.setHttpOnly(true);
 
         // redis中存储信息
-        StringBuilder redisKey = new StringBuilder(CommonStr.REDIS_KEY).append(userToken);
+        StringBuilder redisKey = new StringBuilder(CommonStr.REDIS_KEY_ADMIN).append(userToken);
         redisTemplate.opsForValue().set(redisKey.toString(), user);
         redisTemplate.expire(redisKey.toString(), 30, TimeUnit.MINUTES);
 
@@ -91,10 +90,10 @@ public class TUserController {
 
 
     // 显示个人信息
-    @GetMapping("showUserInfo")
+    @GetMapping("showAdminInfo")
     @ResponseBody
     public ResultBean<TUser> showUserInfo(HttpServletRequest request, Model model){
-        TUser currUser = (TUser) request.getAttribute("user");
+        TUser currUser = (TUser) request.getAttribute("admin");
 
         if(currUser == null){
             return ResultBean.getErrorInstance("您还没有登录, 不能查看个人信息..");
@@ -107,12 +106,12 @@ public class TUserController {
 
 
     // 修改个人信息
-    @GetMapping("updateUserInfo")
+    @GetMapping("updateAdminInfo")
     @ResponseBody
     public ResultBean<TUser> updateUserInfo(HttpServletRequest request, String telnum, String email, String password, String address, String nickname,
-                                            @CookieValue(value = CommonStr.COOKIE_USER_TOKEN, required = false) String userToken){
+                                            @CookieValue(value = CommonStr.COOKIE_ADMIN_TOKEN, required = false) String userToken){
 
-        TUser currUser = (TUser) request.getAttribute("user");
+        TUser currUser = (TUser) request.getAttribute("admin");
 
         if(currUser == null || StringUtils.isEmpty(userToken)){
             return ResultBean.getErrorInstance("您还没有登录,不能修改信息..");
@@ -120,7 +119,7 @@ public class TUserController {
 
         currUser = userService.updateUserInfo(userToken, telnum, email, password, address, nickname);
 
-        request.setAttribute("user", currUser);
+        request.setAttribute("admin", currUser);
         ResultBean<TUser> result = ResultBean.getSuccessInstance("修改成功..");
         result.setData(currUser);
 
@@ -130,22 +129,22 @@ public class TUserController {
 
     // 注销
     @ResponseBody
-    @GetMapping("userLogout")
+    @GetMapping("adminLogout")
     public ResultBean<TUser> userLogout(@CookieValue(CommonStr.COOKIE_USER_TOKEN) String userToken,
                                         HttpServletRequest request, HttpServletResponse response){
-        TUser currUser = (TUser) request.getAttribute("user");
+        TUser currUser = (TUser) request.getAttribute("admin");
 
         if(currUser == null){
             return ResultBean.getErrorInstance("您还没有登录, 不能进行注销操作..");
         }
 
-        Cookie cookie = new Cookie(CommonStr.COOKIE_USER_TOKEN, "");
+        Cookie cookie = new Cookie(CommonStr.COOKIE_ADMIN_TOKEN, "");
         cookie.setMaxAge(0);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         response.addCookie(cookie);
 
-        StringBuilder redisKey = new StringBuilder(CommonStr.REDIS_KEY).append(userToken);
+        StringBuilder redisKey = new StringBuilder(CommonStr.REDIS_KEY_ADMIN).append(userToken);
         redisTemplate.delete(redisKey.toString());
 
         log.info("logout info{}", "注销成功~");
